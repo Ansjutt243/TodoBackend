@@ -1,5 +1,14 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { UserService } from './user.service';
+import { CreateUserDto } from './model/CreateUserDto';
 
 @Controller('users')
 export class UserController {
@@ -10,18 +19,23 @@ export class UserController {
     return this.userService.findAll();
   }
 
- @Get(':id')
-async getOne(@Param('id') id: string) {
-  const user = await this.userService.findOne(id);
-  if (!user) {
-    return { message: 'User not found' };
+  @Get(':id')
+  async getOne(@Param('id') id: string) {
+    const user = await this.userService.findOne(id);
+    if (!user) {
+      return { message: 'User not found' };
+    }
+    return user;
   }
-  return user;
-}
 
   @Post()
-  create(@Body() body: any) {
-    return this.userService.create(body);
+  async create(@Body() body: CreateUserDto) {
+    // try {
+    const result = await this.userService.create(body);
+    return result;
+    // } catch (error) {
+    //   throw new Error(error.message)
+    // }
   }
 
   @Patch(':id')
@@ -33,4 +47,8 @@ async getOne(@Param('id') id: string) {
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
+  @Patch('confirm/:id')
+async confirmEmail(@Param('id') id: string) {
+  return this.userService.confirmEmail(id);
+}
 }
